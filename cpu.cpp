@@ -5,22 +5,17 @@
 
 namespace CPU {
 
+#define RAMSIZE 0x1000
 
 /* CPU state */
-u8 ram[0x1000];
+u8 ram[RAMSIZE];
 u8 A, X, Y, S;
 u16 PC;
 Flags P;
 bool nmi, irq;
 
 /* Cycle emulation */
-#define T   tick()
-
-byte v = HIGH;
-inline void tick() {
-  // PORTB |= (1 << PORTB7);
-  // PORTB &= ~(1 << PORTB7);
-}
+#define T   ""
 
 /* Flags updating */
 inline void upd_cv(u8 x, u8 y, s16 r) {
@@ -46,9 +41,8 @@ template<bool wr> inline u8 access(u16 addr, u8 v = 0)
     PORTB |= (1 << PORTB6);
   }
   switch (addr) {
-    case 0x0000 ... 0x0FFF:  r = &ram[addr]; if (wr) *r = v; return *r;  // RAM.
-    case 0xe000 ... 0xefff:  return pgm_read_byte(erom + (addr - 0xe000));
-    case 0xf000 ... 0xffff:  return pgm_read_byte(from + (addr - 0xf000));
+    case 0x0000 ... RAMSIZE:  r = &ram[addr]; if (wr) *r = v; return *r;  // RAM.
+    case 0xe000 ... 0xffff:  return pgm_read_byte(rom + (addr - 0xe000));
     case 0xd010:
       return 0x80 | UDR0;
     case 0xd011:
