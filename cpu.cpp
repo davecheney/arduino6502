@@ -7,7 +7,7 @@ namespace CPU {
 
 
 /* CPU state */
-u8 ram[0x800];
+u8 ram[0x1000];
 u8 A, X, Y, S;
 u16 PC;
 Flags P;
@@ -18,8 +18,8 @@ bool nmi, irq;
 
 byte v = HIGH;
 inline void tick() {
-  PORTB |= (1 << PORTB7);
-  PORTB &= ~(1 << PORTB7);
+  // PORTB |= (1 << PORTB7);
+  // PORTB &= ~(1 << PORTB7);
 }
 
 /* Flags updating */
@@ -46,7 +46,7 @@ template<bool wr> inline u8 access(u16 addr, u8 v = 0)
     PORTB |= (1 << PORTB6);
   }
   switch (addr) {
-    case 0x0000 ... 0x1FFF:  r = &ram[addr % 0x800]; if (wr) *r = v; return *r;  // RAM.
+    case 0x0000 ... 0x0FFF:  r = &ram[addr]; if (wr) *r = v; return *r;  // RAM.
     case 0xe000 ... 0xefff:  return pgm_read_byte(erom + (addr - 0xe000));
     case 0xf000 ... 0xffff:  return pgm_read_byte(from + (addr - 0xf000));
     case 0xd010:
@@ -55,9 +55,13 @@ template<bool wr> inline u8 access(u16 addr, u8 v = 0)
       return  UCSR0A & _BV(RXC0);
     case 0xd012:
       if (wr) {
-        putchar(v & 0x7f);
+        UDR0 = v & 0x7f;
+        if ((v & 0x7f) == '\r') {
+          loop_until_bit_is_set(UCSR0A, UDRE0);
+          UDR0 = '\n';
+        }
       } else {
-        UCSR0A & _BV(UDRE0) ? 0x00 : 0xFF;
+        return UCSR0A & _BV(UDRE0) ? 0 : 0x80;
       }
   }
   return 0;
@@ -462,9 +466,9 @@ void power()
 
 void run() {
   for (;;) {
-  if (nmi) INT<NMI>();
-  else if (irq and !P[I]) INT<IRQ>();
-  exec();
+    if (nmi) INT<NMI>();
+    else if (irq and !P[I]) INT<IRQ>();
+    exec();
   }
 }
 

@@ -5,17 +5,6 @@
 #define BAUD 9600
 #include <util/setbaud.h>
 
-int uart_putchar(char c, FILE *stream) {
- if (c == '\r') {
-    uart_putchar('\n', stream);
-  }
-  loop_until_bit_is_set(UCSR0A, UDRE0);
-  UDR0 = c;
-  return 0;
-}
-
-static FILE uartout = {0} ;
-
 void uart_init(void) {
   UBRR0H = UBRRH_VALUE;
   UBRR0L = UBRRL_VALUE;
@@ -28,8 +17,6 @@ void uart_init(void) {
 
   UCSR0C = _BV(UCSZ01) | _BV(UCSZ00); /* 8-bit data */
   UCSR0B = _BV(RXEN0) | _BV(TXEN0);   /* Enable RX and TX */
-  fdev_setup_stream (&uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE);
-  stdout = &uartout ;
 }
 
 void setup() {

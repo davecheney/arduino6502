@@ -23,7 +23,7 @@ I recommend `screen(1)` as the terminal emulator, sample usage:
 
   screen /dev/tty.ACM0 9600
 
-To exit the screen, press `Ctrl-a Z`.
+To exit the screen, press `Ctrl-a k`.
 
 ## OS X instructions
 
@@ -31,7 +31,7 @@ I recommend `screen(1)` as the terminal emulator, sample usage:
 
   screen /dev/tty.usbmodem1421 9600
 
-To exit the screen, press `Ctrl-a Z`.
+To exit the screen, press `Ctrl-a k`.
 
 _note_: the exact device name may be different on your system.
 
