@@ -1,7 +1,5 @@
 #include "cpu.hpp"
 
-int v = HIGH;
-
 #include <stdio.h>
 // 2400 for the authentic experience, 9600 for something more enjoyable
 #define BAUD 9600
@@ -37,12 +35,11 @@ void uart_init(void) {
 void setup() {
   //Initialize serial and wait for port to open:
   uart_init();
+  pinMode(12, OUTPUT);
   pinMode(13, OUTPUT);
   CPU::power();
 }
 
 void loop() {
-  digitalWrite(13, v++ );
-  CPU::run_frame();
-  v = v % 2;
+  CPU::run();
 }

@@ -1,6 +1,4 @@
 #include "Arduino.h"
-#include "apu.hpp"
-#include "joypad.hpp"
 #include "cpu.hpp"
 #include "rom.h"
 
@@ -17,7 +15,12 @@ bool nmi, irq;
 
 /* Cycle emulation */
 #define T   tick()
-inline void tick() { }
+
+byte v = HIGH;
+inline void tick() {
+  PORTB |= (1 << PORTB7);
+  PORTB &= ~(1 << PORTB7);
+}
 
 /* Flags updating */
 inline void upd_cv(u8 x, u8 y, s16 r) {
@@ -37,9 +40,15 @@ inline bool cross(u16 a, u8 i) {
 template<bool wr> inline u8 access(u16 addr, u8 v = 0)
 {
   u8* r;
+  if (wr) {
+    PORTB &= ~(1 << PORTB6);
+  } else {
+    PORTB |= (1 << PORTB6);
+  }
   switch (addr) {
     case 0x0000 ... 0x1FFF:  r = &ram[addr % 0x800]; if (wr) *r = v; return *r;  // RAM.
-    case 0xff00 ... 0xffff:  return pgm_read_byte(wozrom + (addr & 0xff));
+    case 0xe000 ... 0xefff:  return pgm_read_byte(erom + (addr - 0xe000));
+    case 0xf000 ... 0xffff:  return pgm_read_byte(from + (addr - 0xf000));
     case 0xd010:
       return 0x80 | UDR0;
     case 0xd011:
@@ -451,12 +460,12 @@ void power()
   INT<RESET>();
 }
 
-/* Run the CPU for roughly a frame */
-void run_frame() {
+void run() {
+  for (;;) {
   if (nmi) INT<NMI>();
   else if (irq and !P[I]) INT<IRQ>();
-  // Serial.println(PC);
   exec();
+  }
 }
 
 }
