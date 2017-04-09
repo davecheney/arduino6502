@@ -23,7 +23,7 @@ Once you've made a serial connection the simulator will restart and issue the pr
 ```
 Which is the sign that you are in the Woz monitor.
 
-The sketch includes ROM images for AppleSoft Lite and Krusader symolic assembler.
+The sketch includes ROM images for AppleSoft Lite and Krusader symbolic assembler.
 
 To run AppleSoft BASIC, enter
 ```
