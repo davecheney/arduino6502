@@ -15,7 +15,30 @@ That's it. Read on for usage instructions.
 
 # Usage
 
-This simulator runs over the Arduino serial port at 9600 baud. You will need to use a terminal emulator to access the simulator.
+This simulator runs over the Arduino serial port at 9600 baud.
+You will need to use a terminal emulator to access the simulator.
+Once you've made a serial connection the simulator will restart and issue the prompt
+```
+\
+```
+Which is the sign that you are in the Woz monitor.
+
+The sketch includes ROM images for AppleSoft Lite and Krusader symolic assembler.
+
+To run AppleSoft BASIC, enter
+```
+E000R
+```
+And you will be dropped into the BASIC prompt
+```
+>
+```
+Remember that the Apple 1 was an upper case only machine, so you should enter all letters in upper case.
+
+Krusader is available at, `$F000`.
+```
+F000R
+```
 
 ## Linux instructions
 
